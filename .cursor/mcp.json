@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "pg-mcp": {
+      "command": "pg-mcp-server",
+      "args": [],
+      "env": {}
+    }
+  }
+}

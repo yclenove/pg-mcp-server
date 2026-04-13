@@ -1,0 +1,65 @@
+{
+  "name": "@yclenove/pg-mcp-server",
+  "version": "1.4.5",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "pg-mcp-server": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "AGENTS.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "inspector": "npx -y @modelcontextprotocol/inspector node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "format": "prettier --write \"{src,.github}/**/*.{ts,js,json,yml,yaml,md}\" \"test/**/*.mjs\"",
+    "format:check": "prettier --check \"{src,.github}/**/*.{ts,js,json,yml,yaml,md}\" \"test/**/*.mjs\"",
+    "test": "node --test --test-name-pattern=. test/audit.test.mjs test/allowlist-extra.test.mjs test/connection-url.test.mjs test/connections-config.test.mjs test/database-allowlist.test.mjs test/explain-json-warnings.test.mjs test/explain-warnings.test.mjs test/executor.test.mjs test/schema-overview-limit.test.mjs test/startup-exit.test.mjs",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "postgresql",
+    "pg",
+    "database",
+    "model-context-protocol",
+    "claude",
+    "ai"
+  ],
+  "author": "yclenove",
+  "license": "MIT",
+  "description": "PostgreSQL MCP Server - 通过 MCP 协议操作 PostgreSQL 数据库",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yclenove/pg-mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yclenove/pg-mcp-server/issues"
+  },
+  "homepage": "https://github.com/yclenove/pg-mcp-server#readme",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "dotenv": "^16.4.7",
+    "pg": "^8.16.3",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@types/node": "^25.5.2",
+    "@types/pg": "^8.20.0",
+    "@typescript-eslint/eslint-plugin": "^8.58.0",
+    "@typescript-eslint/parser": "^8.58.0",
+    "eslint": "^9.39.0",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3"
+  }
+}

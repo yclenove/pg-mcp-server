@@ -1,0 +1,56 @@
+# 发布到 npm 需要仓库 Secret：NPM_TOKEN
+#
+# 若账号开启 2FA，必须使用「可在自动化场景发布、不要求交互 OTP」的令牌，否则会报 EOTP：
+# - 推荐：npm 网站 → Access Tokens → Generate New Token → 选「Granular Access Token」，
+#   勾选对本包（或用户）的 Read and Write，并开启「Publish」相关能力下允许绕过 2FA 的选项
+#   （界面文案可能为 Skip OTP / automation / CI 等，以 npm 当前页面为准）。
+# - 或：Classic Token 中选类型「Automation」（专为 CI 设计，发布时可绕过 OTP）。
+# 勿使用普通 Publish token 且未勾选绕过项，否则 Actions 里无法输入认证器验证码。
+#
+# `package.json` 的 version 必须高于 npm 上已存在的版本，否则会报：
+#   403 You cannot publish over the previously published versions
+# 打 tag / 发 Release 前请先 push 最新 main，确保 CI 检出的是含新版本号的提交。
+#
+name: Publish to NPM
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm run test
+
+      - name: Publish to NPM
+        # NODE_AUTH_TOKEN 须为 Granular（含发布绕过 2FA）或 Classic Automation，见文件顶部说明
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
