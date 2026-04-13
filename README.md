@@ -302,7 +302,30 @@ npm start
 5. **环境变量优先级**：见上文「加载顺序」；命中文件后其中 `PG_*` 等会**覆盖**系统中已设置的同名变量。若要用系统环境覆盖 `.env`，需临时重命名或移走对应 `.env` / 取消 `PG_ENV_PATH`。
 6. 全功能手动测试见 [MCP_CURSOR_TEST.md](./MCP_CURSOR_TEST.md)。
 
-**不装全局**时可用 `npx`：`"args": ["-y", "--registry", "https://registry.npmjs.org/", "@yclenove/pg-mcp-server@latest"]`；若遇 npx 缓存装坏，可清空 `%LOCALAPPDATA%\\npm-cache\\_npx` 后重试。
+**不装全局**时推荐 `npx`（固定走 npm 官方源，避免镜像缺包；`PG_ENV_PATH` 仍指向你的 `.env`）：
+
+```json
+{
+  "mcpServers": {
+    "pg-mcp-server": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "--registry",
+        "https://registry.npmjs.org/",
+        "@yclenove/pg-mcp-server@latest"
+      ],
+      "cwd": "<本仓库根>",
+      "env": {
+        "npm_config_registry": "https://registry.npmjs.org/",
+        "PG_ENV_PATH": "<本仓库根>/.env"
+      }
+    }
+  }
+}
+```
+
+若遇 npx 缓存装坏（缺 `dist/tools/*.js` 等），可清空 `%LOCALAPPDATA%\\npm-cache\\_npx` 后重试。
 
 ### 生产只读示例
 

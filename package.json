@@ -1,6 +1,6 @@
 {
   "name": "@yclenove/pg-mcp-server",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,10 +9,17 @@
   },
   "files": [
     "dist",
+    ".env.example",
     "README.md",
     "AGENTS.md",
     "LICENSE"
   ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",

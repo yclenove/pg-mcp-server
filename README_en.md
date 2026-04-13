@@ -298,7 +298,30 @@ Edit `claude_desktop_config.json` (see Claude docs for paths on macOS/Windows):
 5. **Precedence**: see “Load order” above; matched file overrides inherited `PG_*`.
 6. Full manual checklist: [MCP_CURSOR_TEST.md](./MCP_CURSOR_TEST.md).
 
-**Without global install**, use `npx` with `"args": ["-y", "--registry", "https://registry.npmjs.org/", "@yclenove/pg-mcp-server@latest"]`. If the npx cache is corrupted, delete `%LOCALAPPDATA%\\npm-cache\\_npx` (Windows) and retry.
+**Without global install**, use `npx` (pin the npmjs registry; keep `PG_ENV_PATH` pointing at your `.env`):
+
+```json
+{
+  "mcpServers": {
+    "pg-mcp-server": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "--registry",
+        "https://registry.npmjs.org/",
+        "@yclenove/pg-mcp-server@latest"
+      ],
+      "cwd": "<repo-root>",
+      "env": {
+        "npm_config_registry": "https://registry.npmjs.org/",
+        "PG_ENV_PATH": "<repo-root>/.env"
+      }
+    }
+  }
+}
+```
+
+If the npx cache is corrupted (missing `dist/tools/*.js`), delete `%LOCALAPPDATA%\\npm-cache\\_npx` (Windows) and retry.
 
 ### Production read-only example
 

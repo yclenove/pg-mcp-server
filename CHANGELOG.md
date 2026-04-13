@@ -4,6 +4,13 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/)，版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [2.0.2] - 2026-04-14
+
+### 变更
+
+- `package.json`：增加 **`publishConfig.access: public`**（作用域包默认发布行为更清晰）、**`engines.node >= 18`**。
+- 发布 tarball 附带 **`.env.example`**，便于 `npm pack` / 安装后对照配置。
+
 ## [2.0.1] - 2026-04-14
 
 ### 修复
