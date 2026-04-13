@@ -193,14 +193,14 @@ npm start
 
 ### 连接与账号
 
-| 变量                                               | 默认值    | 说明                                                            |
-| -------------------------------------------------- | --------- | --------------------------------------------------------------- |
-| `PG_HOST`                                          | localhost | 主机                                                            |
-| `PG_PORT`                                          | 5432      | 端口                                                            |
-| `PG_USER`                                          | postgres  | 用户                                                            |
-| `PG_PASSWORD`                                      | -         | 密码                                                            |
-| `PG_DATABASE`                                      | -         | 默认库                                                          |
-| `PG_URL` / `DATABASE_URL` / `PG_CONNECTION_STRING` | -         | `postgresql://` 或 `postgres://`；与分项二选一；密码请 URL 编码 |
+| 变量                                               | 默认值    | 说明                                                                            |
+| -------------------------------------------------- | --------- | ------------------------------------------------------------------------------- |
+| `PG_HOST`                                          | localhost | 主机                                                                            |
+| `PG_PORT`                                          | 5432      | 端口                                                                            |
+| `PG_USER`                                          | postgres  | 用户                                                                            |
+| `PG_PASSWORD`                                      | -         | 密码                                                                            |
+| `PG_DATABASE`                                      | -         | 默认库                                                                          |
+| `PG_URL` / `DATABASE_URL` / `PG_CONNECTION_STRING` | -         | `postgresql://` 或 `postgres://`；与分项二选一；密码请 URL 编码                 |
 | `PG_ENV_PATH`                                      | -         | 绝对路径指向任意 `.env`；可在 MCP `env` 中设置，避免宿主 `cwd` 不对时读不到配置 |
 
 ### 安全与白名单
@@ -309,12 +309,7 @@ npm start
   "mcpServers": {
     "pg-mcp-server": {
       "command": "npx",
-      "args": [
-        "-y",
-        "--registry",
-        "https://registry.npmjs.org/",
-        "@yclenove/pg-mcp-server@latest"
-      ],
+      "args": ["-y", "--registry", "https://registry.npmjs.org/", "@yclenove/pg-mcp-server@latest"],
       "cwd": "<本仓库根>",
       "env": {
         "npm_config_registry": "https://registry.npmjs.org/",

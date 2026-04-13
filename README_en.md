@@ -189,14 +189,14 @@ Legacy `MYSQL_*` names are still read as **fallback** in code for migration; pre
 
 ### Connection
 
-| Var                                                | Default   | Description                                            |
-| -------------------------------------------------- | --------- | ------------------------------------------------------ |
-| `PG_HOST`                                          | localhost | Host                                                   |
-| `PG_PORT`                                          | 5432      | Port                                                   |
-| `PG_USER`                                          | postgres  | User                                                   |
-| `PG_PASSWORD`                                      | —         | Password                                               |
-| `PG_DATABASE`                                      | —         | Default database                                       |
-| `PG_URL` / `DATABASE_URL` / `PG_CONNECTION_STRING` | —         | `postgresql://` or `postgres://`; URL-encode passwords |
+| Var                                                | Default   | Description                                                   |
+| -------------------------------------------------- | --------- | ------------------------------------------------------------- |
+| `PG_HOST`                                          | localhost | Host                                                          |
+| `PG_PORT`                                          | 5432      | Port                                                          |
+| `PG_USER`                                          | postgres  | User                                                          |
+| `PG_PASSWORD`                                      | —         | Password                                                      |
+| `PG_DATABASE`                                      | —         | Default database                                              |
+| `PG_URL` / `DATABASE_URL` / `PG_CONNECTION_STRING` | —         | `postgresql://` or `postgres://`; URL-encode passwords        |
 | `PG_ENV_PATH`                                      | —         | Absolute path to a `.env`; set in MCP `env` if `cwd` is wrong |
 
 ### Safety & allowlist
@@ -305,12 +305,7 @@ Edit `claude_desktop_config.json` (see Claude docs for paths on macOS/Windows):
   "mcpServers": {
     "pg-mcp-server": {
       "command": "npx",
-      "args": [
-        "-y",
-        "--registry",
-        "https://registry.npmjs.org/",
-        "@yclenove/pg-mcp-server@latest"
-      ],
+      "args": ["-y", "--registry", "https://registry.npmjs.org/", "@yclenove/pg-mcp-server@latest"],
       "cwd": "<repo-root>",
       "env": {
         "npm_config_registry": "https://registry.npmjs.org/",
