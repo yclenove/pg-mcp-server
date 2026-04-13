@@ -4,6 +4,12 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/)，版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [2.0.0] - 2026-04-14
+
+### 变更
+
+- **版本号重新对齐**：`pg-mcp-server` 与 `mysql-mcp-server` 分属不同产品，不再沿用从 MySQL 分叉时的 `1.4.x/1.5.x` 序列；自 **2.0.0** 起独立语义化版本。此前 `1.5.0`/`1.5.1` 的变更记录保留于本文件下方，便于对照。
+
 ## [1.5.1] - 2026-04-14
 
 ### 变更
