@@ -181,7 +181,9 @@ Manual checklist: [MCP_CURSOR_TEST.md](./MCP_CURSOR_TEST.md).
 
 ## Configuration
 
-Create `.env` in the **project root** (copy [`.env.example`](./.env.example)); **do not commit `.env`**. Keys in that file **override** inherited process/env vars (including system `PG_*`).
+Create `.env` in the **project root** (copy [`.env.example`](./.env.example)); **do not commit `.env`**.
+
+Load order (first match wins; `override: true` on load): **`PG_ENV_PATH`** (absolute path to any `.env`), then **`process.cwd()/.env`**, then **`<entry>/../.env`** (parent of `dist/` when running `node …/dist/index.js`, for hosts that do not set `cwd` to the repo root).
 
 Legacy `MYSQL_*` names are still read as **fallback** in code for migration; prefer `PG_*` for new configs.
 
@@ -195,6 +197,7 @@ Legacy `MYSQL_*` names are still read as **fallback** in code for migration; pre
 | `PG_PASSWORD`                                      | —         | Password                                               |
 | `PG_DATABASE`                                      | —         | Default database                                       |
 | `PG_URL` / `DATABASE_URL` / `PG_CONNECTION_STRING` | —         | `postgresql://` or `postgres://`; URL-encode passwords |
+| `PG_ENV_PATH`                                      | —         | Absolute path to a `.env`; set in MCP `env` if `cwd` is wrong |
 
 ### Safety & allowlist
 
@@ -275,8 +278,8 @@ Edit `claude_desktop_config.json` (see Claude docs for paths on macOS/Windows):
 
 [![Add to Cursor](https://img.shields.io/badge/Add%20to-Cursor-6C47FF?logo=cursor&logoColor=white)](https://cursor.com/en/install-mcp?name=pg-mcp-server&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsIkB5Y2xlbm92ZS9wZy1tY3Atc2VydmVyQGxhdGVzdCJdfQ%3D%3D)
 
-1. Open this repo as the **workspace root** (so `cwd` loads `.env`).
-2. **Global install**: `npm install -g @yclenove/pg-mcp-server@latest` and ensure `pg-mcp-server` is on `PATH` (Windows: npm global bin).
+1. **Recommended for local dev**: `"command": "node"`, `"args": ["<repo>/dist/index.js"]` after `npm run build`. Even if `cwd` is your home directory, the server still tries **`<dist>/../.env`**. If the host never sets `cwd`, set **`PG_ENV_PATH`** in MCP `env` to the absolute `.env` path.
+2. **Global install**: `npm install -g @yclenove/pg-mcp-server@latest` and ensure `pg-mcp-server` is on `PATH` (Windows: npm global bin). If your registry mirror lacks the package, use `--registry https://registry.npmjs.org/` with `npx` or set `@yclenove:registry`.
 3. Put connection settings in **project root** `.env` (gitignored). **Do not** put production passwords in MCP `env` if you can rely on `.env`.
 4. This repo **does not commit** `.cursor/`. Add the MCP server in Cursor settings, or create **local** `.cursor/mcp.json` under the project root (not committed), for example:
 
@@ -292,11 +295,10 @@ Edit `claude_desktop_config.json` (see Claude docs for paths on macOS/Windows):
 }
 ```
 
-5. **Precedence**: project `.env` overrides inherited `PG_*` when present.
+5. **Precedence**: see “Load order” above; matched file overrides inherited `PG_*`.
 6. Full manual checklist: [MCP_CURSOR_TEST.md](./MCP_CURSOR_TEST.md).
 
-**Without global install**, use `npx`: `"command": "npx"`, `"args": ["-y", "@yclenove/pg-mcp-server"]`.  
-For local source debugging: `"command": "node"`, `"args": ["${workspaceFolder}/dist/index.js"]` after `npm run build`.
+**Without global install**, use `npx` with `"args": ["-y", "--registry", "https://registry.npmjs.org/", "@yclenove/pg-mcp-server@latest"]`. If the npx cache is corrupted, delete `%LOCALAPPDATA%\\npm-cache\\_npx` (Windows) and retry.
 
 ### Production read-only example
 

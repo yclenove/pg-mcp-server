@@ -4,6 +4,13 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/)，版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [2.0.1] - 2026-04-14
+
+### 修复
+
+- **Cursor 无工具列表**：在 `test_connection` 之前先 `server.connect(stdio)`，避免客户端长时间收不到 MCP 握手而出现「No tools, prompts, or resources」。
+- **`.env` 未加载**：支持 `PG_ENV_PATH`（绝对路径）与入口脚本 `dist/` 上一级目录的 `.env`；当 MCP 宿主未把 `cwd` 设为项目根（例如落在用户主目录）时，仍能通过 `node …/dist/index.js` 读到仓库根 `.env`。
+
 ## [2.0.0] - 2026-04-14
 
 ### 变更

@@ -3,15 +3,18 @@
  * PostgreSQL MCP Server 入口文件
  *
  * 环境变量配置（优先级从高到低）：
- * 1. 当前工作目录下已存在的 `.env` 文件中的键（dotenv `override: true`，覆盖进程继承的环境变量，避免系统里残留的 PG_* 压过项目配置）
- * 2. 进程继承的环境变量（系统、终端、MCP 客户端 `env` 等；未被 `.env` 覆盖的键仍生效）
- * 3. PG_URL / DATABASE_URL 等在连接层解析出的字段
+ * 1. `PG_ENV_PATH` 指向的文件（若设置）
+ * 2. `process.cwd()/.env`（MCP 客户端若未传 cwd，此项可能落在用户主目录，不一定存在）
+ * 3. 入口脚本所在包根目录下的 `.env`（即 `dist/` 的上一级；`node …/pg-mcp-server/dist/index.js` 时稳定指向仓库根）
+ * 4. 以上文件均用 dotenv `override: true` 加载；再与进程继承的环境变量合并；未覆盖的键仍来自进程环境
+ * 5. PG_URL / DATABASE_URL 等在连接层解析出的字段
  */
 
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { config as dotenvConfig } from 'dotenv';
 import { existsSync } from 'fs';
-import { join } from 'path';
+import { dirname, join, resolve } from 'path';
+import { fileURLToPath } from 'url';
 import { createServer } from './server.js';
 import {
   testConnectionWithDetails,
@@ -32,18 +35,16 @@ import {
 function loadEnvFile(): string {
   const paths: string[] = [];
 
-  // 1. 如果指定了 PG_ENV_PATH，优先使用
-  // if (process.env.MYSQL_ENV_PATH) {
-  //   paths.push(resolve(process.env.MYSQL_ENV_PATH));
-  // }
+  const pgEnvPath = process.env.PG_ENV_PATH?.trim();
+  if (pgEnvPath) {
+    paths.push(resolve(pgEnvPath));
+  }
 
-  // 2. 当前工作目录（Claude Code 的项目目录）
   paths.push(join(process.cwd(), '.env'));
 
-  // 3. MCP server 所在目录
-  // paths.push(join(__dirname, '../.env'));
+  const entryDir = dirname(fileURLToPath(import.meta.url));
+  paths.push(join(entryDir, '..', '.env'));
 
-  // 按优先级尝试加载
   for (const envPath of paths) {
     // 日志输出到 stderr，避免干扰 stdio 通信
     console.error(`[PG MCP] Loading .env from: ${envPath}`);
@@ -95,7 +96,13 @@ async function main() {
     process.exit(1);
   }
 
-  // 测试数据库连接
+  const server = createServer();
+  const transport = new StdioServerTransport();
+  // 必须先 attach stdio：若在 testConnection 之后才 connect，客户端长时间收不到 MCP 握手，
+  // Cursor 等会表现为已连接但「No tools, prompts, or resources」。
+  await server.connect(transport);
+
+  // 测试数据库连接（stdio 已就绪后再做网络探测，避免阻塞 MCP 发现工具列表）
   const connectionResult = await testConnectionWithDetails();
 
   if (!connectionResult.success) {
@@ -114,10 +121,6 @@ async function main() {
       log(`WARN: 额外连接「${id}」不可用: ${ping.error || 'unknown'}`);
     }
   }
-
-  const server = createServer();
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
 
   log(
     `Ready — Tools: ${Object.keys((server as any)._registeredTools || {}).length}, ` +

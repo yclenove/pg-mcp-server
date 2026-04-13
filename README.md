@@ -185,7 +185,9 @@ npm start
 
 ## 配置说明
 
-在**项目根目录**放置 `.env`（可复制 [`.env.example`](./.env.example)），启动时自动加载；**勿提交 `.env`**。若该文件存在，其中出现的键会**覆盖**进程已继承的环境变量（含系统里的 `PG_*`）；若未找到项目 `.env`，则仍仅使用环境变量与默认行为。
+在**项目根目录**放置 `.env`（可复制 [`.env.example`](./.env.example)），启动时自动加载；**勿提交 `.env`**。
+
+加载顺序（先命中者生效，且以 `override: true` 覆盖进程里已有同名变量）：① 环境变量 **`PG_ENV_PATH`** 指向的文件；② **`process.cwd()/.env`**；③ 入口脚本所在目录的上一级（即 **`dist/` 的上一级**，适用于 Cursor 未正确传入 `cwd`、但用 `node …/pg-mcp-server/dist/index.js` 启动）。若均未找到文件，则仅使用进程环境与默认行为。
 
 为从 MySQL 版迁移，代码中仍支持部分旧 `MYSQL_*` 变量名作为**回退**（见源码 `src/db/connection.ts`），新配置请统一使用 `PG_*`。
 
@@ -199,6 +201,7 @@ npm start
 | `PG_PASSWORD`                                      | -         | 密码                                                            |
 | `PG_DATABASE`                                      | -         | 默认库                                                          |
 | `PG_URL` / `DATABASE_URL` / `PG_CONNECTION_STRING` | -         | `postgresql://` 或 `postgres://`；与分项二选一；密码请 URL 编码 |
+| `PG_ENV_PATH`                                      | -         | 绝对路径指向任意 `.env`；可在 MCP `env` 中设置，避免宿主 `cwd` 不对时读不到配置 |
 
 ### 安全与白名单
 
@@ -279,8 +282,8 @@ npm start
 
 [![Add to Cursor](https://img.shields.io/badge/Add%20to-Cursor-6C47FF?logo=cursor&logoColor=white)](https://cursor.com/en/install-mcp?name=pg-mcp-server&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsIkB5Y2xlbm92ZS9wZy1tY3Atc2VydmVyQGxhdGVzdCJdfQ%3D%3D)
 
-1. **打开本仓库为工作区根目录**（使进程 `cwd` 能加载项目根下的 `.env`；多文件夹工作区时请单独打开本仓库或将其设为根）。
-2. **安装 npm 包（全局）**：`npm install -g @yclenove/pg-mcp-server@latest`，确保终端里能执行 `pg-mcp-server`（Windows 需保证 Node 的 npm 全局 `bin` 在 PATH 中）。
+1. **推荐本地调试**：`"command": "node"`，`"args": ["<本仓库>/dist/index.js"]`（先 `npm run build`）。即使用户目录为进程 `cwd`，也会尝试加载 **`dist/` 上一级** 的 `.env`；若宿主始终不传 `cwd`，可在 MCP `env` 里设 **`PG_ENV_PATH`** 指向该 `.env` 的绝对路径。
+2. **安装 npm 包（全局）**：`npm install -g @yclenove/pg-mcp-server@latest`，确保终端里能执行 `pg-mcp-server`（Windows 需保证 Node 的 npm 全局 `bin` 在 PATH 中）。国内镜像若缺包，请对 `npx` 加 `--registry https://registry.npmjs.org/` 或配置 `@yclenove:registry`。
 3. **连接信息**：写在**项目根目录** `.env`（已在 `.gitignore`，勿提交密码）。**不要**在 MCP 配置的 `env` 里写生产密码；本地可空 `env`、仅依赖 `.env`。
 4. **Cursor MCP 配置**：本仓库**不提交** `.cursor/`。请在 Cursor 设置中新增 MCP，或在本机创建 **项目根** `.cursor/mcp.json`（仅本地，勿提交），例如：
 
@@ -296,11 +299,10 @@ npm start
 }
 ```
 
-5. **环境变量优先级**：若项目根存在 `.env`，其中出现的 `PG_*` 等会**覆盖**你系统中已设置的同名变量。若要用系统环境覆盖 `.env`，需临时重命名或移走项目 `.env`。
+5. **环境变量优先级**：见上文「加载顺序」；命中文件后其中 `PG_*` 等会**覆盖**系统中已设置的同名变量。若要用系统环境覆盖 `.env`，需临时重命名或移走对应 `.env` / 取消 `PG_ENV_PATH`。
 6. 全功能手动测试见 [MCP_CURSOR_TEST.md](./MCP_CURSOR_TEST.md)。
 
-**不装全局**时可用 `npx`：`"command": "npx"`，`"args": ["-y", "@yclenove/pg-mcp-server"]`。  
-本地改源码调试时，可把 `command` / `args` 改为 **`node` + `${workspaceFolder}/dist/index.js`**（需先 `npm run build`）。
+**不装全局**时可用 `npx`：`"args": ["-y", "--registry", "https://registry.npmjs.org/", "@yclenove/pg-mcp-server@latest"]`；若遇 npx 缓存装坏，可清空 `%LOCALAPPDATA%\\npm-cache\\_npx` 后重试。
 
 ### 生产只读示例
 
