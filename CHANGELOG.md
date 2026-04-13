@@ -4,6 +4,14 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/)，版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [1.5.1] - 2026-04-14
+
+### 变更
+
+- 全面重写 `README.md` / `README_en.md`：与 PostgreSQL 实现一致（架构、环境变量、Resources URI、Cursor 接入、Docker 示例等）
+- `MCP_CURSOR_TEST.md`：改为 PG 语义与 `postgresql://` 资源；说明 `.cursor/` 由本地自建、不随仓库提供
+- `AGENTS.md`：表述与「`.cursor` 不纳入 Git」一致
+
 ## [1.5.0] - 2026-04-13
 
 ### 新增
@@ -15,7 +23,7 @@
 
 - 连接层与执行层迁移到 PostgreSQL：连接串解析改为 `postgresql://` / `postgres://`，只读会话与重试逻辑适配 PG
 - 元数据与运维工具适配 PostgreSQL 方言：数据库列表、表结构、索引查询、`pg_stat_activity`、`pg_cancel_backend` 等
-- MCP 对外命名同步更新：server 名称、Resource URI、`.cursor/mcp.json` 默认命令改为 PG 版本
+- MCP 对外命名同步更新：server 名称、Resource URI 等改为 PG 版本
 - `.env.example`、测试用例、README/README_en 首屏说明同步迁移为 PostgreSQL 语义
 
 ## [1.4.5] - 2026-04-09
