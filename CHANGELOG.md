@@ -6,6 +6,10 @@
 
 ## [2.0.2] - 2026-04-14
 
+### 修复
+
+- **`explain_query`（默认文本 EXPLAIN）**：PostgreSQL 返回的 **`QUERY PLAN`** 列原先未被格式化，工具正文为空；现按行拼接计划文本（兼容 `query plan` 小写列名）。
+
 ### 变更
 
 - `package.json`：增加 **`publishConfig.access: public`**（作用域包默认发布行为更清晰）、**`engines.node >= 18`**。

@@ -11,23 +11,7 @@ import {
   explainJsonStringToWarnings,
   explainRowsToWarnings,
 } from '../explainWarnings.js';
-
-function formatExplainResult(rows: any[]): string {
-  return rows
-    .map((row) => {
-      const parts: string[] = [];
-      if (row.id !== undefined) parts.push(`id=${row.id}`);
-      if (row.select_type) parts.push(`type=${row.select_type}`);
-      if (row.table) parts.push(`table=${row.table}`);
-      if (row.type) parts.push(`access=${row.type}`);
-      if (row.key) parts.push(`key=${row.key}`);
-      if (row.rows !== undefined) parts.push(`rows=${row.rows}`);
-      if (row.filtered !== undefined) parts.push(`filtered=${row.filtered}%`);
-      if (row.Extra) parts.push(`extra=${row.Extra}`);
-      return parts.join(', ');
-    })
-    .join('\n');
-}
+import { formatExplainRowsToText } from '../explainTextFormat.js';
 
 const queryInputSchema = {
   sql: z.string().describe('SQL'),
@@ -143,7 +127,7 @@ export function registerQueryTools(server: McpServer): void {
           warnings = [];
         }
       } else {
-        text = formatExplainResult(rows);
+        text = formatExplainRowsToText(rows);
         warnings = explainRowsToWarnings(rows);
       }
 
